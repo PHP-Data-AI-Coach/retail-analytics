@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Напреден Трговски Аналитички Систем</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: system-ui, -apple-system, sans-serif; }
+        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 10px; }
+        .header-banner { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <!-- Насловна Лента -->
+        <div class="p-4 mb-4 header-banner d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 m-0 fw-bold">Retail Commerce Analytics & POS Hub</h1>
+                <p class="m-0 opacity-75">Интеграција на SQLite релациска база, Pandas Pivot табели и Seaborn графикони</p>
+            </div>
+            <span class="badge bg-light text-success fs-6 fw-bold px-3 py-2 shadow-sm">База: SQLite Active</span>
+        </div>
+
+        <div class="row g-4">
+            <!-- КОЛОНА 1: ФОРМА ЗА ИЗГОТВУВАЊЕ НА НОВА СМЕТКА -->
+            <div class="col-lg-4">
+                <div class="card p-4 h-100 bg-white">
+                    <h4 class="h5 mb-3 text-dark border-bottom pb-2 fw-bold text-success">🧾 Изготви Нова Сметка</h4>
+                    <form action="/add_invoice" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Број на Сметка:</label>
+                            <input type="text" name="invoice_number" class="form-control form-control-sm" placeholder="Пр. INV-2005" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Датум на издавање:</label>
+                            <input type="date" name="date" class="form-control form-control-sm" value="2026-10-28" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Избери Продавница:</label>
+                            <select name="store_id" class="form-select form-select-sm" required>
+                                {% for store in stores %}
+                                <option value="{{ store.store_id }}">{{ store.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Избери Артикл:</label>
+                            <select name="item_id" class="form-select form-select-sm" required>
+                                {% for item in items %}
+                                <option value="{{ item.item_id }}">{{ item.name }} ({{ item.price }} ден.)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Количина:</label>
+                            <input type="number" name="quantity" class="form-control form-control-sm" min="1" value="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm w-100 fw-bold py-2 mt-2">Внеси Трансакција во База</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- КОЛОНА 2: ИЗВЕШТАИ И ГРАФИКОН -->
+            <div class="col-lg-8">
+                <div class="d-flex flex-column gap-4 h-100">
+                    <!-- Табеларен матричен извештај -->
+                    <div class="card p-4 bg-white">
+                        <h4 class="h5 mb-2 text-dark border-bottom pb-2 fw-bold text-primary">📊 Матричен извештај за продажба по датум</h4>
+                        <div class="table-responsive">
+                            {{ report_table | safe }}
+                        </div>
+                    </div>
+                    
+                    <!-- Визуелен графички извештај -->
+                    <div class="card p-4 bg-white text-center justify-content-center">
+                        <h4 class="h5 mb-2 text-dark border-bottom pb-2 fw-bold text-start text-primary">📈 Аналитички Тренд График</h4>
+                        {% if chart_stream %}
+                        <img src="data:image/png;base64,{{ chart_stream }}" class="img-fluid rounded mt-2" alt="Seaborn Динамичен Рендер">
+                        {% else %}
+                        <p class="text-muted my-4">Нема доволно податоци во базата за приказ на графикон.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
